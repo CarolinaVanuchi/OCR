@@ -1,9 +1,13 @@
 import cv2
 import pytesseract
 from src import treatment
+from src import latex
 
-image = cv2.imread('src/image/exemple.png')
-
+#image = cv2.imread('src/image/exemple.png')
+#image = cv2.imread('src/image/exemple1.jpeg')
+#image = cv2.imread('src/image/exemple2.jpeg')
+#image = cv2.imread('src/image/exemple3.jpg')
+image = cv2.imread('src/image/exemple4.png')
 
 window_name = 'image'
 cv2.imshow(window_name, image)
@@ -30,3 +34,10 @@ print(text)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+file = open('export.tex', 'w')
+file.write(latex.Latex.header())
+file.write(latex.Latex.content(text))
+file.write(latex.Latex.footer())
+ 

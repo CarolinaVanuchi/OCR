@@ -26,7 +26,7 @@ class Treatment:
         return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
     
     def canny(image):
-        return cv2.Canny(image, 100, 200)
+        return cv2.Canny(image, 80, 90)
     
     def deskew(image):
         coords = np.column_stack(np.where(image > 0))
