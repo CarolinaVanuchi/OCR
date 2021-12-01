@@ -13,10 +13,10 @@ cv2.imshow(window_name, image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-gray = treatment.Treatment.put_gray(image)
-thresh = treatment.Treatment.thresholding(gray)
-opening = treatment.Treatment.opening(gray)
-canny = treatment.Treatment.canny(gray)
+gray = treatment.Treatment.put_gray(image) #escala de cinza
+#thresh = treatment.Treatment.thresholding(gray) #aplicar limiarização, determinar uma densidade de cinza
+#opening = treatment.Treatment.opening(gray) #aplicar uma dilatação
+canny = treatment.Treatment.canny(gray) #dilatar
 
 window_canny = 'canny'
 cv2.imshow(window_canny, canny)
