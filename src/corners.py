@@ -123,7 +123,9 @@ def process(image, corner_width_pad, confidence_threshold):
     vdivs, tcorners, bcorners = matches
 
     # convert ndarray to list 
-    tcorners = tcorners.tolist()
+    #tcorners = tcorners.tolist()
+    tcorners = [item.tolist() for item in tcorners]
+
     buf = []
     for n in tcorners:
         # add a little clearance
@@ -135,7 +137,9 @@ def process(image, corner_width_pad, confidence_threshold):
     tcorners = buf
 
     # convert ndarray to list 
-    bcorners = bcorners.tolist()
+    # bcorners = bcorners.tolist()
+    bcorners = [item.tolist() for item in bcorners]
+
     buf = []
     for n in bcorners:
         # since templatematch matches the top right corner, we add the width and height
