@@ -6,8 +6,8 @@ from src import pdf
 def main():
 
     # preprocessing
-    #image = cv2.imread("image/whiteboard.png", cv2.IMREAD_UNCHANGED)
-    #image = cv2.imread("image/whiteboard2.png", cv2.IMREAD_UNCHANGED)
+    # image = cv2.imread("image/whiteboard.png", cv2.IMREAD_UNCHANGED)
+    # image = cv2.imread("image/whiteboard2.png", cv2.IMREAD_UNCHANGED)
     image = cv2.imread("image/whiteboard3.jpeg", cv2.IMREAD_UNCHANGED)
   
     image = corners.process(image, 11, 0.6)

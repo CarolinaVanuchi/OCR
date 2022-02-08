@@ -38,39 +38,19 @@ def organize_crop_corners(top_corner_rect_list, bottom_corner_rect_list):
 
     return corner_pairs
 
-def create_blank(width, height, rgb_color=(0, 0, 0)):
-    """Create new image(numpy array) filled with certain color in RGB"""
-    # Create black blank image
-    image = np.zeros((height, width, 1), np.uint8)
-
-
-
-    return image
-
 # apply blur, correct contrast, hsv convertion
 def preprocessing(image):
-    blue, green, red = cv2.split(image)
-    
-    hist_blue = cv2.equalizeHist(blue)
-    hist_green = cv2.equalizeHist(green)
-    hist_red = cv2.equalizeHist(red)
-    h, w = red.shape
-    red = create_blank(w, h, (0,0,0))
-    new_image = cv2.merge((hist_blue, hist_green, red))
-    cv2.imshow("image", new_image)
+    blur = cv2.GaussianBlur(image, (5,5), 0)
+    cv2.imwrite("output/1_preprocessing_blur.png", blur)
     cv2.waitKey(0)
 
-    bluer = cv2.GaussianBlur(new_image, (5,5), 0)
-    cv2.imshow("image", bluer)
-    cv2.waitKey(0)
-
-    cv2.imwrite("normhist.png", bluer)
-
-    hsv = cv2.cvtColor(bluer, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
    
-    mask = cv2.inRange(hsv, (0, 0, 0), (255, 255, 30))
+    mask2 = cv2.inRange(hsv, (0,   65, 51), (10,  255, 255))
+    mask1 = cv2.inRange(hsv, (170, 65, 51), (180, 255, 255))
+    mask = cv2.bitwise_or(mask1, mask2)
   
-    cv2.imshow("image", mask)
+    cv2.imwrite("output/2_preprocessing_mask.png", mask)
     cv2.waitKey(0)
     return mask
 
@@ -130,7 +110,7 @@ def pmatch(image, confidence_threshold):
     
     return [vdivs, tcorners, bcorners]
 
-
+# find corners an return cutted matches
 def process(image, corner_width_pad, confidence_threshold):
 
     proc = preprocessing(image)
