@@ -1,7 +1,10 @@
+import os 
+import shutil 
 from email.errors import HeaderMissingRequiredValue
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt 
+
 # sort a list of list points by their distance from the origin list point
 def sort_dist(list, origin):
     new_list = []
@@ -46,8 +49,8 @@ def preprocessing(image):
 
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
    
-    mask2 = cv2.inRange(hsv, (0,   65, 51), (10,  255, 255))
-    mask1 = cv2.inRange(hsv, (170, 65, 51), (180, 255, 255))
+    mask2 = cv2.inRange(hsv, (0,   75, 51), (10,  255, 255))
+    mask1 = cv2.inRange(hsv, (170, 75, 51), (180, 255, 255))
     mask = cv2.bitwise_or(mask1, mask2)
   
     cv2.imwrite("output/2_preprocessing_mask.png", mask)
@@ -69,9 +72,6 @@ def pmatch(image, confidence_threshold):
         vdivs.append([x, y, w, h])
     
     vdivs, n = cv2.groupRectangles(vdivs, 1, 0.2)
-
-    # for (x, y, w, h) in vdivs:
-    #     cv2.rectangle(pm_image, [x,y], [x + w, y + h], (255, 0, 255), 2)
     
     # for top corners 
     topcorner = cv2.imread("src/match/top_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
@@ -87,8 +87,6 @@ def pmatch(image, confidence_threshold):
     
     tcorners, n = cv2.groupRectangles(tcorners, 1, 0.2)
 
-    # for (x, y, w, h) in tcorners:
-    #     cv2.rectangle(pm_image, [x,y], [x + w, y + h], (255, 0, 255), 2)
     
     # for bottom corners 
     bottomcorner = cv2.imread("src/match/bottom_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
@@ -105,18 +103,25 @@ def pmatch(image, confidence_threshold):
     
     bcorners, n = cv2.groupRectangles(bcorners, 1, 0.2)
     
-    # for (x, y, w, h) in bcorners:
-    #     cv2.rectangle(pm_image, [x,y], [x + w, y + h], (255, 0, 255), 2)
     
     return [vdivs, tcorners, bcorners]
 
 # find corners an return cutted matches
-def process(image, corner_width_pad, confidence_threshold):
+def process(image, corner_offset_pad, confidence_threshold):
 
     proc = preprocessing(image)
     matches = pmatch(proc, confidence_threshold)
 
     vdivs, tcorners, bcorners = matches
+
+    draw = image.copy()
+    for (x, y, w, h) in vdivs:
+        cv2.rectangle(draw, [x,y], [x + w, y + h], (255, 0, 255), 2)
+    for (x, y, w, h) in tcorners:
+        cv2.rectangle(draw, [x,y], [x + w, y + h], (0, 0, 255), 2)
+    for (x, y, w, h) in bcorners:
+        cv2.rectangle(draw, [x,y], [x + w, y + h], (255, 0, 0), 2)
+    cv2.imwrite("output/3_matches.png", draw)
 
     # convert ndarray to list 
     #tcorners = tcorners.tolist()
@@ -125,8 +130,8 @@ def process(image, corner_width_pad, confidence_threshold):
     buf = []
     for n in tcorners:
         # add a little clearance
-        n[0] += corner_width_pad
-        n[1] += corner_width_pad
+        n[0] += corner_offset_pad
+        n[1] += corner_offset_pad
         # cut the width and height
         buf.append(n[:2])
 
@@ -143,8 +148,8 @@ def process(image, corner_width_pad, confidence_threshold):
         n[0] += n[2]
         n[1] += n[3]
         # add a little clearance
-        n[0] -= corner_width_pad
-        n[1] -= corner_width_pad
+        n[0] -= corner_offset_pad
+        n[1] -= corner_offset_pad
         # cut the width and height
         buf.append(n[:2])
 
@@ -152,17 +157,21 @@ def process(image, corner_width_pad, confidence_threshold):
 
     # group corner pairs
     pairs = organize_crop_corners(tcorners, bcorners)
-    # print("images:", pairs)
+    print("images:", pairs)
+
+    try:
+        shutil.rmtree("output/images")    
+    except:
+        print("output/images already exists")
+        
+    os.mkdir("output/images")
 
     i = 0
     for (t, b) in pairs:
-        # cv2.imwrite("output/image/image_{}.png".format(i), image[t[1]:b[1], t[0]:b[0]])
+        cv2.imwrite("output/images/image_{}.png".format(i), image[t[1]:b[1], t[0]:b[0]])
         i += 1
 
     for (t, b) in pairs:
         cv2.rectangle(image, t, b, (255, 255, 0), 2)
 
     return image
-
-    # cv2.imwrite("output/image/pm_image.png", pm_image)
-    # cv2.imwrite("output/image/rect_pairs_image.png", image)

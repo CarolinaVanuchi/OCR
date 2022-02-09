@@ -1,3 +1,4 @@
+import sys
 import cv2
 import numpy as np
 from src import corners
@@ -10,13 +11,19 @@ def main():
     # image = cv2.imread("image/whiteboard2.png", cv2.IMREAD_UNCHANGED)
     image = cv2.imread("image/whiteboard3.jpeg", cv2.IMREAD_UNCHANGED)
   
-    image = corners.process(image, 11, 0.6)
-    
-    cv2.imshow("image", image)
-    cv2.waitKey(0)
+    threshold = 0.75
+    offset = 15
+    if len(sys.argv) >= 2:
+        threshold = float(sys.argv[1])
+        offset = int(sys.argv[2])
 
-    cv2.imwrite('output/image.png', image)
-    #pdf.to_pdf('output', 297, 210, 'output.pdf')
+    image = corners.process(image, offset, threshold)
+    
+    # cv2.imshow("image", image)
+    # cv2.waitKey(0)
+
+    cv2.imwrite('output/4_image.png', image)
+    pdf.to_pdf('output/images', 297, 210, 'output/output.pdf')
    
 # guard
 if __name__ == "__main__":
