@@ -1,6 +1,7 @@
+from email.errors import HeaderMissingRequiredValue
 import numpy as np
 import cv2
-
+from matplotlib import pyplot as plt 
 # sort a list of list points by their distance from the origin list point
 def sort_dist(list, origin):
     new_list = []
@@ -18,7 +19,6 @@ def sort_dist(list, origin):
         new_list.append(list[i])
 
     return new_list
-
 
 # organize corner pairs from a list of top corners and bottom corners
 def organize_crop_corners(top_corner_rect_list, bottom_corner_rect_list):
@@ -38,25 +38,41 @@ def organize_crop_corners(top_corner_rect_list, bottom_corner_rect_list):
 
     return corner_pairs
 
+def create_blank(width, height, rgb_color=(0, 0, 0)):
+    """Create new image(numpy array) filled with certain color in RGB"""
+    # Create black blank image
+    image = np.zeros((height, width, 1), np.uint8)
+
+
+
+    return image
 
 # apply blur, correct contrast, hsv convertion
 def preprocessing(image):
+    blue, green, red = cv2.split(image)
+    
+    hist_blue = cv2.equalizeHist(blue)
+    hist_green = cv2.equalizeHist(green)
+    hist_red = cv2.equalizeHist(red)
+    h, w = red.shape
+    red = create_blank(w, h, (0,0,0))
+    new_image = cv2.merge((hist_blue, hist_green, red))
+    cv2.imshow("image", new_image)
+    cv2.waitKey(0)
 
-    # # pattern match image show
-    # pm_image = image.copy()
+    bluer = cv2.GaussianBlur(new_image, (5,5), 0)
+    cv2.imshow("image", bluer)
+    cv2.waitKey(0)
 
-    # morph
-    kernel = np.ones((7,7),np.uint8)
-    morph = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    cv2.imwrite("normhist.png", bluer)
 
-    hsv = cv2.cvtColor(morph, cv2.COLOR_BGR2HSV)
-
-    # red hue mask
-    mask = cv2.inRange(hsv, (165, 50, 127), (195, 255, 255))
-    # cv2.imwrite("output/image/hsvmask.png", mask)
-
+    hsv = cv2.cvtColor(bluer, cv2.COLOR_BGR2HSV)
+   
+    mask = cv2.inRange(hsv, (0, 0, 0), (255, 255, 30))
+  
+    cv2.imshow("image", mask)
+    cv2.waitKey(0)
     return mask
-
 
 # match patterns
 def pmatch(image, confidence_threshold):
