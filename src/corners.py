@@ -58,10 +58,12 @@ def preprocessing(image):
     return mask
 
 # match patterns
-def pmatch(image, confidence_threshold):
+def pmatch(image, confidence_threshold, tm_algo):
     # for div 
     div = cv2.imread("src/match/div_bw.png", cv2.IMREAD_GRAYSCALE) 
-    match = cv2.matchTemplate(image, div, cv2.TM_CCORR_NORMED)
+    match = cv2.matchTemplate(image, div, tm_algo)
+    cv2.imwrite("output/3_1_match_div.png", match*255)
+    
 
     h, w = div.shape
     y_loc, x_loc = np.where(match >= confidence_threshold)
@@ -75,7 +77,8 @@ def pmatch(image, confidence_threshold):
     
     # for top corners 
     topcorner = cv2.imread("src/match/top_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
-    match = cv2.matchTemplate(image, topcorner, cv2.TM_CCORR_NORMED)
+    match = cv2.matchTemplate(image, topcorner, tm_algo)
+    cv2.imwrite("output/3_2_match_topc.png", match*255)
 
     h, w = topcorner.shape
     y_loc, x_loc = np.where(match >= confidence_threshold)
@@ -90,7 +93,8 @@ def pmatch(image, confidence_threshold):
     
     # for bottom corners 
     bottomcorner = cv2.imread("src/match/bottom_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
-    match = cv2.matchTemplate(image, bottomcorner, cv2.TM_CCORR_NORMED)
+    match = cv2.matchTemplate(image, bottomcorner, tm_algo)
+    cv2.imwrite("output/3_3_match_botc.png", match*255)
 
     h, w = bottomcorner.shape
     y_loc, x_loc = np.where(match >= confidence_threshold)
@@ -110,7 +114,7 @@ def pmatch(image, confidence_threshold):
 def process(image, corner_offset_pad, confidence_threshold):
 
     proc = preprocessing(image)
-    matches = pmatch(proc, confidence_threshold)
+    matches = pmatch(proc, confidence_threshold, cv2.TM_CCORR_NORMED)
 
     vdivs, tcorners, bcorners = matches
 
@@ -121,7 +125,7 @@ def process(image, corner_offset_pad, confidence_threshold):
         cv2.rectangle(draw, [x,y], [x + w, y + h], (0, 0, 255), 2)
     for (x, y, w, h) in bcorners:
         cv2.rectangle(draw, [x,y], [x + w, y + h], (255, 0, 0), 2)
-    cv2.imwrite("output/3_matches.png", draw)
+    cv2.imwrite("output/4_matches.png", draw)
 
     # convert ndarray to list 
     #tcorners = tcorners.tolist()

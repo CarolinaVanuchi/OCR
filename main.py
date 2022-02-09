@@ -7,9 +7,9 @@ from src import pdf
 def main():
 
     # preprocessing
-    # image = cv2.imread("image/whiteboard.png", cv2.IMREAD_UNCHANGED)
-    # image = cv2.imread("image/whiteboard2.png", cv2.IMREAD_UNCHANGED)
-    image = cv2.imread("image/whiteboard3.jpeg", cv2.IMREAD_UNCHANGED)
+    # image = cv2.imread("image/whiteboard.png", cv2.IMREAD_COLOR)
+    image = cv2.imread("image/whiteboard2.png", cv2.IMREAD_COLOR)
+    # image = cv2.imread("image/whiteboard3.jpeg", cv2.IMREAD_COLOR)
   
     threshold = 0.75
     offset = 15
@@ -22,7 +22,7 @@ def main():
     # cv2.imshow("image", image)
     # cv2.waitKey(0)
 
-    cv2.imwrite('output/4_image.png', image)
+    cv2.imwrite('output/5_image.png', image)
     pdf.to_pdf('output/images', 297, 210, 'output/output.pdf')
    
 # guard
