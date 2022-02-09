@@ -57,8 +57,8 @@ def preprocessing(image):
 # match patterns
 def pmatch(image, confidence_threshold):
     # for div 
-    div = cv2.imread("image/div_bw.png", cv2.IMREAD_GRAYSCALE) 
-    match = cv2.matchTemplate(image, div, cv2.TM_CCOEFF_NORMED)
+    div = cv2.imread("src/match/div_bw.png", cv2.IMREAD_GRAYSCALE) 
+    match = cv2.matchTemplate(image, div, cv2.TM_CCORR_NORMED)
 
     h, w = div.shape
     y_loc, x_loc = np.where(match >= confidence_threshold)
@@ -74,8 +74,8 @@ def pmatch(image, confidence_threshold):
     #     cv2.rectangle(pm_image, [x,y], [x + w, y + h], (255, 0, 255), 2)
     
     # for top corners 
-    topcorner = cv2.imread("image/top_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
-    match = cv2.matchTemplate(image, topcorner, cv2.TM_CCOEFF_NORMED)
+    topcorner = cv2.imread("src/match/top_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
+    match = cv2.matchTemplate(image, topcorner, cv2.TM_CCORR_NORMED)
 
     h, w = topcorner.shape
     y_loc, x_loc = np.where(match >= confidence_threshold)
@@ -91,8 +91,8 @@ def pmatch(image, confidence_threshold):
     #     cv2.rectangle(pm_image, [x,y], [x + w, y + h], (255, 0, 255), 2)
     
     # for bottom corners 
-    bottomcorner = cv2.imread("image/bottom_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
-    match = cv2.matchTemplate(image, bottomcorner, cv2.TM_CCOEFF_NORMED)
+    bottomcorner = cv2.imread("src/match/bottom_corner_bw.png", cv2.IMREAD_GRAYSCALE) 
+    match = cv2.matchTemplate(image, bottomcorner, cv2.TM_CCORR_NORMED)
 
     h, w = bottomcorner.shape
     y_loc, x_loc = np.where(match >= confidence_threshold)
